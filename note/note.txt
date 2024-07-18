@@ -1,0 +1,13 @@
+PKLot.v1-raw.yolov8
+
+######## Use Open CV ########
+note/train/2012-12-11_14_56_07_jpg.rf.6df322de34acc6e2d02cb1140af3175f.jpg
+## Before Resault = 30
+brightness_value = 0    # ค่า brightness #ค่าปกติ = 0
+contrast_value = 1    # ค่า contrast #ค่าปกติ = 1
+noise_value = 0        # ค่า noise reduction #ค่าปกติ = 0
+-------------------------------------------
+## After Resault = 37
+brightness_value = 35    # ค่า brightness #ค่าปกติ = 0
+contrast_value = 25    # ค่า contrast #ค่าปกติ = 1
+noise_value = 2        # ค่า noise reduction #ค่าปกติ = 0
