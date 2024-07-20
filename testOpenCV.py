@@ -1,20 +1,19 @@
 import cv2
 from ultralytics import YOLO
 
-# กำหนดพารามิเตอร์สำหรับการปรับแต่ง
-brightness_value = 50    # ค่า brightness #ค่าปกติ = 0
-contrast_value = 25    # ค่า contrast #ค่าปกติ = 1
-noise_value = 2        # ค่า noise reduction #ค่าปกติ = 0
+# Define parameters for adjustment
+brightness_value = 50    # Brightness value; default = 0
+contrast_value = 25      # Contrast value; default = 1
+noise_value = 2          # Noise reduction value; default = 0
 
-# โหลดโมเดล YOLO
+# Load the YOLO model
 model = YOLO('yolov8s.pt')
-#model = YOLO('runs/detect/train/weights/best.pt')
+# model = YOLO('runs/detect/train/weights/best.pt')
 
+# Read the image
+frame = cv2.imread('note/train/2012-12-11_14_56_07_jpg.rf.6df322de34acc6e2d02cb1140af3175f.jpg')  # Normal parking lot image
 
-# อ่านรูปภาพ
-frame = cv2.imread('note/train/2012-12-11_14_56_07_jpg.rf.6df322de34acc6e2d02cb1140af3175f.jpg')  # ภาพลาดจอด pklot ปกติ
-
-# ฟังก์ชันสำหรับการปรับ Brightness และ Contrast
+# Function to adjust brightness and contrast
 def adjust_brightness_contrast(image, brightness=0, contrast=0):
     # Brightness
     if brightness != 0:
@@ -39,29 +38,28 @@ def adjust_brightness_contrast(image, brightness=0, contrast=0):
 
     return buf
 
-# ฟังก์ชันสำหรับการลด Noise
+# Function to reduce noise
 def reduce_noise(image, noise_value):
     return cv2.fastNlMeansDenoisingColored(image, None, noise_value, noise_value, 7, 21)
 
-# อ่านไฟล์ "coco.txt" และแบ่งข้อมูลออกเป็นรายการของคลาส
+# Read "coco.txt" file and split the data into a list of classes
 with open("coco.txt", "r") as my_file:
     data = my_file.read()
     class_list = data.split("\n")
 
-
-# ปรับ Brightness และ Contrast ของภาพ
+# Adjust the brightness and contrast of the image
 frame = adjust_brightness_contrast(frame, brightness_value, contrast_value)
 
-# ลด Noise ของภาพ
+# Reduce noise in the image
 frame = reduce_noise(frame, noise_value)
 
-# ตรวจจับวัตถุในภาพ
+# Detect objects in the image
 results = model(frame)
 
-# ดึงข้อมูลการตรวจจับที่เป็นรถยนต์
+# Extract the class ID for cars
 car_class_id = class_list.index('car')
 
-# ฟังก์ชันสำหรับการดึงกรอบรอบวัตถุ
+# Function to extract bounding boxes around objects
 def get_boxes(results, class_id):
     boxes = []
     for result in results:
@@ -70,21 +68,21 @@ def get_boxes(results, class_id):
                 boxes.append(det.xyxy.numpy())
     return boxes
 
-# ดึงกรอบรอบรถยนต์
+# Get bounding boxes for cars
 car_boxes = get_boxes(results, car_class_id)
 
-# นับจำนวนรถยนต์
+# Count the number of cars
 num_cars = len(car_boxes)
 
-# แสดงจำนวนรถยนต์
+# Print the number of cars detected
 print(f"Number of cars detected: {num_cars}")
 
-# วาดกรอบรอบๆ รถยนต์ในภาพ
+# Draw bounding boxes around cars in the image
 for box in car_boxes:
     x1, y1, x2, y2 = map(int, box[0])
     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-# แสดงภาพที่มีการวาดกรอบ
+# Display the image with bounding boxes
 cv2.imshow('Image with cars', frame)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
