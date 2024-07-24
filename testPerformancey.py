@@ -57,7 +57,7 @@ def get_boxes(results, class_id):
     return boxes
 
 # Get the list of images in the folder
-image_folder = 'images2'
+image_folder = 'images'
 image_files = [f for f in os.listdir(image_folder) if f.endswith('.jpg')]
 
 # Array to hold the results
