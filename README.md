@@ -43,21 +43,19 @@ This project is designed to handle the complexities of image processing in adver
 - PKLot.v1-raw.yolov8
 
 ## Use Use Open CV for improving photo quality.
---------------------------------------- 
-Before Resault = 30
----------------------------------------
-brightness_value = 0    #brightness #Default = 0
-contrast_value = 1    	#contrast #Default = 1
-noise_value = 0        	#noise reduction #Default = 0
+- brightness #Default = 0
+- contrast #Default = 1
+- noise reduction #Default = 0
 
---------------------------------------- 
- After Resault = 40
---------------------------------------- 
+1.Before Resault = 30
+brightness_value = 0
+contrast_value = 1 
+noise_value = 0
+
+2.After Resault = 40
 brightness_value = 50   
 contrast_value = 25 
 noise_value = 2  
-
-
 
 
 # Demo Screenshots
