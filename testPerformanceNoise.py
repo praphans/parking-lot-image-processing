@@ -4,9 +4,9 @@ import cv2
 from ultralytics import YOLO
 
 # Define parameters for adjustment
-brightness_values = [0]
-contrast_values = [5, 10, 15, 20, 25]
-noise_value = 0
+brightness_value = 0
+contrast_value = 1
+noise_values = [0.5, 1, 1.5, 2, 2.5]
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
@@ -70,10 +70,10 @@ for image_file in image_files:
     # Initialize results for this image
     results_dict[image_file] = []
 
-    # Process results for each contrast value
-    for contrast_value in contrast_values:
+    # Process results for each noise value
+    for noise_value in noise_values:
         # Adjust the brightness and contrast of the image
-        frame_adjusted = adjust_brightness_contrast(frame, brightness_values[0], contrast_value)
+        frame_adjusted = adjust_brightness_contrast(frame, brightness_value, contrast_value)
 
         # Reduce noise in the image
         frame_adjusted = reduce_noise(frame_adjusted, noise_value)
@@ -92,7 +92,7 @@ for image_file in image_files:
 
         # Append the result to the array for this image
         results_dict[image_file].append({
-            'contrast_value': contrast_value,
+            'noise_value': noise_value,
             'cars': num_cars
         })
 
