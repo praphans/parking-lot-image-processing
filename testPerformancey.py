@@ -4,7 +4,7 @@ import cv2
 from ultralytics import YOLO
 
 # Define parameters for adjustment
-brightness_value = 0 
+brightness_values = [10, 20, 30, 35, 40]
 contrast_value = 1  
 noise_value = 0
 
@@ -52,7 +52,8 @@ def get_boxes(results, class_id):
     for result in results:
         for det in result.boxes:
             if int(det.cls) == class_id:
-                boxes.append(det.xyxy.numpy())
+                # ย้ายเทนเซอร์ไปยัง CPU ก่อนแปลงเป็น NumPy array
+                boxes.append(det.xyxy.cpu().numpy())
     return boxes
 
 # Get the list of images in the folder
@@ -60,39 +61,43 @@ image_folder = 'images2'
 image_files = [f for f in os.listdir(image_folder) if f.endswith('.jpg')]
 
 # Array to hold the results
-results_array = []
+results_dict = {}
 
 for image_file in image_files:
     image_path = os.path.join(image_folder, image_file)
     frame = cv2.imread(image_path)  # Normal parking lot image
+    
+    # Initialize results for this image
+    results_dict[image_file] = []
 
-    # Adjust the brightness and contrast of the image
-    frame = adjust_brightness_contrast(frame, brightness_value, contrast_value)
+    # Process results for each brightness value
+    for brightness_value in brightness_values:
+        # Adjust the brightness and contrast of the image
+        frame_adjusted = adjust_brightness_contrast(frame, brightness_value, contrast_value)
 
-    # Reduce noise in the image
-    frame = reduce_noise(frame, noise_value)
+        # Reduce noise in the image
+        frame_adjusted = reduce_noise(frame_adjusted, noise_value)
 
-    # Detect objects in the image
-    results = model(frame)
+        # Detect objects in the image
+        results = model(frame_adjusted)
 
-    # Extract the class ID for cars
-    car_class_id = class_list.index('car')
+        # Extract the class ID for cars
+        car_class_id = class_list.index('car')
 
-    # Get bounding boxes for cars
-    car_boxes = get_boxes(results, car_class_id)
+        # Get bounding boxes for cars
+        car_boxes = get_boxes(results, car_class_id)
 
-    # Count the number of cars
-    num_cars = len(car_boxes)
+        # Count the number of cars
+        num_cars = len(car_boxes)
 
-    # Append the result to the array
-    results_array.append({
-        'image': image_path,
-        'brightness_value': brightness_value,
-        'cars': num_cars
-    })
+        # Append the result to the array for this image
+        results_dict[image_file].append({
+            'brightness_value': brightness_value,
+            'cars': num_cars
+        })
 
-# Convert the result array to JSON format
-json_result = json.dumps(results_array, indent=4)
+# Convert the results dictionary to JSON format
+json_result = json.dumps(results_dict, indent=4)
 
 # Print the JSON result
 print(json_result)
