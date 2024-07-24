@@ -1,12 +1,10 @@
+import os
+import json
 import cv2
 from ultralytics import YOLO
 
 # Define parameters for adjustment
-# Brightness default = 0
-# Contrast default = 1
-# Noise reduction default = 0
-
-brightness_value = 40 
+brightness_value = 0 
 contrast_value = 1  
 noise_value = 0
 
@@ -14,8 +12,6 @@ noise_value = 0
 model = YOLO('yolov8s.pt')
 # model = YOLO('runs/detect/train/weights/best.pt')
 
-# Read the image
-frame = cv2.imread('images/2013-03-15_12_20_07_jpg.rf.cae1b120f2dc0b2d0caa47ff2c9b9de8.jpg')  # Normal parking lot image
 # Function to adjust brightness and contrast
 def adjust_brightness_contrast(image, brightness=0, contrast=0):
     # Brightness
@@ -50,18 +46,6 @@ with open("coco.txt", "r") as my_file:
     data = my_file.read()
     class_list = data.split("\n")
 
-# Adjust the brightness and contrast of the image
-frame = adjust_brightness_contrast(frame, brightness_value, contrast_value)
-
-# Reduce noise in the image
-frame = reduce_noise(frame, noise_value)
-
-# Detect objects in the image
-results = model(frame)
-
-# Extract the class ID for cars
-car_class_id = class_list.index('car')
-
 # Function to extract bounding boxes around objects
 def get_boxes(results, class_id):
     boxes = []
@@ -71,21 +55,44 @@ def get_boxes(results, class_id):
                 boxes.append(det.xyxy.numpy())
     return boxes
 
-# Get bounding boxes for cars
-car_boxes = get_boxes(results, car_class_id)
+# Get the list of images in the folder
+image_folder = 'images2'
+image_files = [f for f in os.listdir(image_folder) if f.endswith('.jpg')]
 
-# Count the number of cars
-num_cars = len(car_boxes)
+# Array to hold the results
+results_array = []
 
-# Print the number of cars detected
-print(f"Number of cars detected: {num_cars}")
+for image_file in image_files:
+    image_path = os.path.join(image_folder, image_file)
+    frame = cv2.imread(image_path)  # Normal parking lot image
 
-# Draw bounding boxes around cars in the image
-for box in car_boxes:
-    x1, y1, x2, y2 = map(int, box[0])
-    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    # Adjust the brightness and contrast of the image
+    frame = adjust_brightness_contrast(frame, brightness_value, contrast_value)
 
-# Display the image with bounding boxes
-cv2.imshow('Image with cars', frame)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    # Reduce noise in the image
+    frame = reduce_noise(frame, noise_value)
+
+    # Detect objects in the image
+    results = model(frame)
+
+    # Extract the class ID for cars
+    car_class_id = class_list.index('car')
+
+    # Get bounding boxes for cars
+    car_boxes = get_boxes(results, car_class_id)
+
+    # Count the number of cars
+    num_cars = len(car_boxes)
+
+    # Append the result to the array
+    results_array.append({
+        'image': image_path,
+        'brightness_value': brightness_value,
+        'cars': num_cars
+    })
+
+# Convert the result array to JSON format
+json_result = json.dumps(results_array, indent=4)
+
+# Print the JSON result
+print(json_result)

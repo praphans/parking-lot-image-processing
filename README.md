@@ -31,5 +31,26 @@ pip install opencv-python ultralytics
 
 This project is designed to handle the complexities of image processing in adverse weather, ensuring reliable vehicle detection and counting in parking lots.
 
+PKLot.v1-raw.yolov8
+
+## Use Open CV
+# --------------------------------------- #
+# Before Resault = 30
+# --------------------------------------- #
+brightness_value = 0    #brightness #Default = 0
+contrast_value = 1    	#contrast #Default = 1
+noise_value = 0        	#noise reduction #Default = 0
+
+
+# --------------------------------------- #
+# After Resault = 40
+# --------------------------------------- #
+brightness_value = 50   
+contrast_value = 25 
+noise_value = 2  
+
+
+
+
 # Demo Screenshots
 ![alt text](https://github.com/praphanth/parking-lot-image-processing/blob/master/img-demo.png?raw=true)
