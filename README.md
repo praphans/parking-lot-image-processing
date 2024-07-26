@@ -31,13 +31,30 @@ pip install opencv-python ultralytics
 
 This project is designed to handle the complexities of image processing in adverse weather, ensuring reliable vehicle detection and counting in parking lots.
 
+## Test step
+Step : 1
+- `Brightness`
+- `Contrast`
+- `Noise`
 
+Step : 2
+- `Brightness+Contrast`
+- `Brightness+Noise`
+- `Contrast+Noise`
+
+Step : 3
+- `Brightness+Contrast+Noise`
+
+  
 ## Run file
 - `testOpenCV.py`: Main file for testing image quality improvements.
 - `testPerformanceBrightness.py`: for testing the Performance of Brightness.
 - `testPerformanceContrast.py`: for testing Contrast's Performance.
 - `testPerformanceNoise.py`: for testing Noise performance.
-
+- `testPerformanceBrightness_and_Contrast` : for testing Brightness and Contrast performance.
+- `testPerformanceBrightness_and_Noise` : for testing Brightness and Noise performance.
+- `testPerformanceContrast_and_Noise` : for testing Contrast and Noise performance.
+- `testPerformanceBrightness_and_Contrast_and_Noise` : for testing Brightness and Contrast and Noise performance.
 
 ## Dataset
 - PKLot.v1-raw.yolov8
