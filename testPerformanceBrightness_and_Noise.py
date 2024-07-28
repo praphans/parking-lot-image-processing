@@ -6,8 +6,8 @@ from ultralytics import YOLO
 
 # Define parameters for adjustment
 brightness_values = [10, 20, 30, 40, 50, 60]
-contrast_values = [5, 10, 15, 20, 25, 30]
-noise_value = 0  # Fixed noise value for this case
+contrast_value = 1  # Fixed contrast value for this case
+noise_values = [0.5, 1, 1.5, 2, 2.5, 3]
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
@@ -68,9 +68,9 @@ for image_file in image_files:
     image_path = os.path.join(image_folder, image_file)
     frame = cv2.imread(image_path)  # Normal parking lot image
     
-    # Process results for each combination of brightness and contrast
+    # Process results for each combination of brightness and noise
     for brightness_value in brightness_values:
-        for contrast_value in contrast_values:
+        for noise_value in noise_values:
             # Adjust the brightness and contrast of the image
             frame_adjusted = adjust_brightness_contrast(frame, brightness_value, contrast_value)
 
@@ -93,7 +93,7 @@ for image_file in image_files:
             results_list.append({
                 'image': image_file,
                 'brightness_value': brightness_value,
-                'contrast_value': contrast_value,
+                'noise_value': noise_value,
                 'cars': num_cars
             })
 
@@ -103,12 +103,10 @@ json_result = json.dumps(results_list, indent=4)
 # Print the JSON result
 #print(json_result)
 
-# Save the results to a JSON file
-with open('brightness_and_contrast.json', 'w') as outfile:
+# Optionally, save the results to a JSON file
+with open('brightness_and_noise.json', 'w') as outfile:
     json.dump(results_list, outfile, indent=4)
 
 # Save the results to an Excel file
 df = pd.DataFrame(results_list)
-df.to_excel('brightness_and_contrast.xlsx', index=False)
-
-print("Results saved to 'brightness_and_contrast.json' and 'brightness_and_contrast.xlsx'")
+df.to_excel('brightness_and_noise.xlsx', index=False)
