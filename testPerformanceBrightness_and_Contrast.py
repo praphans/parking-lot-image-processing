@@ -58,7 +58,7 @@ def get_boxes(results, class_id):
     return boxes
 
 # Get the list of images in the folder
-image_folder = 'images'
+image_folder = 'images2'
 image_files = [f for f in os.listdir(image_folder) if f.endswith('.jpg')]
 
 # Array to hold the results
@@ -99,9 +99,6 @@ for image_file in image_files:
 
 # Convert the results list to JSON format
 json_result = json.dumps(results_list, indent=4)
-
-# Print the JSON result
-#print(json_result)
 
 # Save the results to a JSON file
 with open('brightness_and_contrast.json', 'w') as outfile:
