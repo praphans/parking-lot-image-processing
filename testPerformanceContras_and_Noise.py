@@ -2,10 +2,13 @@ import os
 import json
 import cv2
 import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import Alignment
 from ultralytics import YOLO
 
 # Define parameters for adjustment
-brightness_value = 0  # Fixed brightness value for this case
+brightness_value = 0  # Fixed brightness value
 contrast_values = [5, 10, 15, 20, 25, 30]
 noise_values = [0.5, 1, 1.5, 2, 2.5, 3]
 
@@ -68,47 +71,72 @@ for image_file in image_files:
     image_path = os.path.join(image_folder, image_file)
     frame = cv2.imread(image_path)  # Normal parking lot image
     
-    # Process results for each combination of brightness, contrast, and noise
-    for brightness_value in brightness_values:
-        for contrast_value in contrast_values:
-            for noise_value in noise_values:
-                # Adjust the brightness and contrast of the image
-                frame_adjusted = adjust_brightness_contrast(frame, brightness_value, contrast_value)
+    # Process results for each combination of contrast and noise
+    for contrast_value in contrast_values:
+        for noise_value in noise_values:
+            # Adjust the brightness and contrast of the image
+            frame_adjusted = adjust_brightness_contrast(frame, brightness_value, contrast_value)
 
-                # Reduce noise in the image
-                frame_adjusted = reduce_noise(frame_adjusted, noise_value)
+            # Reduce noise in the image
+            frame_adjusted = reduce_noise(frame_adjusted, noise_value)
 
-                # Detect objects in the image
-                results = model(frame_adjusted)
+            # Detect objects in the image
+            results = model(frame_adjusted)
 
-                # Extract the class ID for cars
-                car_class_id = class_list.index('car')
+            # Extract the class ID for cars
+            car_class_id = class_list.index('car')
 
-                # Get bounding boxes for cars
-                car_boxes = get_boxes(results, car_class_id)
+            # Get bounding boxes for cars
+            car_boxes = get_boxes(results, car_class_id)
 
-                # Count the number of cars
-                num_cars = len(car_boxes)
+            # Count the number of cars
+            num_cars = len(car_boxes)
 
-                # Append the result to the list
-                results_list.append({
-                    'image': image_file,
-                    'brightness_value': brightness_value,
-                    'contrast_value': contrast_value,
-                    'noise_value': noise_value,
-                    'cars': num_cars
-                })
+            # Append the result to the list
+            results_list.append({
+                'image': image_file,
+                'contrast_value': contrast_value,
+                'noise_value': noise_value,
+                'cars': num_cars
+            })
 
-# Convert the results list to JSON format
-json_result = json.dumps(results_list, indent=4)
-
-# Print the JSON result
-#print(json_result)
-
-# Optionally, save the results to a JSON file
-with open('brightness_contrast_noise.json', 'w') as outfile:
+# Save the results to a JSON file
+with open('contrast_and_noise.json', 'w') as outfile:
     json.dump(results_list, outfile, indent=4)
 
-# Save results to Excel
+# Convert the results list to a DataFrame
 df = pd.DataFrame(results_list)
-df.to_excel('brightness_contrast_noise.xlsx', index=False)
+
+# Save the results to an Excel file
+excel_path = 'contrast_and_noise.xlsx'
+df.to_excel(excel_path, index=False)
+
+# Load the Excel file
+wb = load_workbook(excel_path)
+ws = wb.active
+
+# Merge cells for each unique image
+current_image = None
+start_row = 2  # Starting from the first data row
+
+for index, row in enumerate(dataframe_to_rows(df, index=False, header=False), start=2):
+    image = row[0]
+    if image != current_image:
+        if current_image is not None:
+            ws.merge_cells(start_row=start_row, start_column=1, end_row=index-1, end_column=1)
+            for merged_row in range(start_row, index):
+                cell = ws.cell(row=merged_row, column=1)
+                cell.alignment = Alignment(vertical='center')
+        current_image = image
+        start_row = index
+
+# Merge cells for the last image
+ws.merge_cells(start_row=start_row, start_column=1, end_row=ws.max_row, end_column=1)
+for merged_row in range(start_row, ws.max_row + 1):
+    cell = ws.cell(row=merged_row, column=1)
+    cell.alignment = Alignment(vertical='center')
+
+# Save the updated Excel file
+wb.save(excel_path)
+
+print("Results saved to 'contrast_and_noise.json' and 'contrast_and_noise.xlsx'")

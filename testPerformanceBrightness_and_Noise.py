@@ -2,11 +2,14 @@ import os
 import json
 import cv2
 import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import Alignment
 from ultralytics import YOLO
 
 # Define parameters for adjustment
 brightness_values = [10, 20, 30, 40, 50, 60]
-contrast_value = 1  # Fixed contrast value for this case
+contrast_value = 1  
 noise_values = [0.5, 1, 1.5, 2, 2.5, 3]
 
 # Load the YOLO model
@@ -97,16 +100,43 @@ for image_file in image_files:
                 'cars': num_cars
             })
 
-# Convert the results list to JSON format
-json_result = json.dumps(results_list, indent=4)
-
-# Print the JSON result
-#print(json_result)
-
-# Optionally, save the results to a JSON file
+# Save the results to a JSON file
 with open('brightness_and_noise.json', 'w') as outfile:
     json.dump(results_list, outfile, indent=4)
 
-# Save the results to an Excel file
+# Convert the results list to a DataFrame
 df = pd.DataFrame(results_list)
-df.to_excel('brightness_and_noise.xlsx', index=False)
+
+# Save the results to an Excel file
+excel_path = 'brightness_and_noise.xlsx'
+df.to_excel(excel_path, index=False)
+
+# Load the Excel file
+wb = load_workbook(excel_path)
+ws = wb.active
+
+# Merge cells for each unique image
+current_image = None
+start_row = 2  # Starting from the first data row
+
+for index, row in enumerate(dataframe_to_rows(df, index=False, header=False), start=2):
+    image = row[0]
+    if image != current_image:
+        if current_image is not None:
+            ws.merge_cells(start_row=start_row, start_column=1, end_row=index-1, end_column=1)
+            for merged_row in range(start_row, index):
+                cell = ws.cell(row=merged_row, column=1)
+                cell.alignment = Alignment(vertical='center')
+        current_image = image
+        start_row = index
+
+# Merge cells for the last image
+ws.merge_cells(start_row=start_row, start_column=1, end_row=ws.max_row, end_column=1)
+for merged_row in range(start_row, ws.max_row + 1):
+    cell = ws.cell(row=merged_row, column=1)
+    cell.alignment = Alignment(vertical='center')
+
+# Save the updated Excel file
+wb.save(excel_path)
+
+print("Results saved to 'brightness_and_noise.json' and 'brightness_and_noise.xlsx'")
