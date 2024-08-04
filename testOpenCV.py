@@ -6,16 +6,16 @@ from ultralytics import YOLO
 # Contrast default = 1
 # Noise reduction default = 0
 
-brightness_value = 10 
-contrast_value = 5  
-noise_value = 0.5
+brightness_value = 40
+contrast_value = 25
+noise_value = 2
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
 # model = YOLO('runs/detect/train/weights/best.pt')
 
 # Read the image
-frame = cv2.imread('images/2012-12-11_14_56_07_jpg.rf.6df322de34acc6e2d02cb1140af3175f.jpg')  # Normal parking lot image
+frame = cv2.imread('images/2012-12-21_18_30_15_jpg.rf.823ad3e87780ff3fb214468b44e23c8c.jpg')  # Normal parking lot image
 # Function to adjust brightness and contrast
 def adjust_brightness_contrast(image, brightness=0, contrast=0):
     # Brightness
