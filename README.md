@@ -15,6 +15,10 @@ The **Parking Lot Image Processing** project utilizes YOLOv8s with Python and Op
 
 - `cv2` (OpenCV): Used for various image processing operations.
 - `ultralytics` (YOLOv8s): Utilized for vehicle detection and counting.
+- `cvzone` : cvzone for functions to draw text on images
+- `numpy`: NumPy for mathematical calculations and data manipulation
+- `structural_similarity` : SSIM
+- `peak_signal_noise_ratio` : PSNR
 
 ## Installation
 
@@ -47,7 +51,7 @@ Step : 3
 
   
 ## Run file
-- `testOpenCV.py`: Main file for testing image quality improvements.
+- `main.py`: Main file for testing image quality improvements.
 - `testPerformanceBrightness.py`: for testing the Performance of Brightness.
 - `testPerformanceContrast.py`: for testing Contrast's Performance.
 - `testPerformanceNoise.py`: for testing Noise performance.
