@@ -6,6 +6,7 @@ from ultralytics import YOLO
 brightness_value = 50
 contrast_value = 25
 noise_value = 2
+is_adjustment = 1  # 1 = enable adjustment, 0 = disable adjustment
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
@@ -51,9 +52,14 @@ car_class_id = class_list.index('car')
 car_boxes_without_preprocess = [det.xyxy.numpy() for result in results_without_preprocess for det in result.boxes if int(det.cls) == car_class_id]
 num_cars_without_preprocess = len(car_boxes_without_preprocess)
 
-# Adjust the brightness and contrast of the image
-frame_preprocessed = adjust_brightness_contrast(frame, brightness_value, contrast_value)
-frame_preprocessed = reduce_noise(frame_preprocessed, noise_value)
+# Apply adjustment only if is_adjustment is enabled
+if is_adjustment == 1:
+    # Adjust the brightness and contrast of the image
+    frame_preprocessed = adjust_brightness_contrast(frame, brightness_value, contrast_value)
+    # Reduce noise
+    frame_preprocessed = reduce_noise(frame_preprocessed, noise_value)
+else:
+    frame_preprocessed = frame.copy()  # If adjustment is off, use the original image
 
 # Detect objects in the preprocessed image
 results_with_preprocess = model(frame_preprocessed)
