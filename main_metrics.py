@@ -5,16 +5,16 @@ from skimage.metrics import structural_similarity as ssim
 import numpy as np
 
 # Define parameters for adjustment
-brightness_value = 50
-contrast_value = 5
-noise_value = 0.5
-is_adj = 0  # 0 = disable adjustment, 1 = enable adjustment
+brightness_value = 65
+contrast_value = 30
+noise_value = 2
+is_adj = 1  # 0 = disable adjustment, 1 = enable adjustment
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
 
 # Read the image
-frame = cv2.imread('images/rainfall/fake_rain/parking-lot-facebook.jpg')  # Normal parking lot image
+frame = cv2.imread('images/rainfall/fake_rain/5_2_bad.jpg')  # Normal parking lot image
 
 # Function to adjust brightness and contrast
 def adjust_brightness_contrast(image, brightness=0, contrast=0):
