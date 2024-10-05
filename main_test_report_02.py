@@ -52,9 +52,9 @@ with open("coco.txt", "r") as my_file:
 results = []
 
 # Loop through all combinations of brightness, contrast, and noise
-for brightness_value in range(0, 101, 5):  # 0 to 100 with step 5
-    for contrast_value in range(0, 101, 5):  # 0 to 100 with step 5
-        for noise_value in np.arange(0, 21, 0.5):  # 0 to 20 with step 0.5
+for brightness_value in range(0, 81, 5):  # 0 to 100 with step 5
+    for contrast_value in range(0, 81, 5):  # 0 to 100 with step 5
+        for noise_value in np.arange(0, 11, 0.5):  # 0 to 20 with step 0.5
             # Step 1: Reduce noise first
             frame_preprocessed = reduce_noise(frame, noise_value)
 
