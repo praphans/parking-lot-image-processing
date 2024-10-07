@@ -4,19 +4,56 @@ from ultralytics import YOLO
 from skimage.metrics import structural_similarity as ssim
 import numpy as np
 
+# Define parameters for adjustment
+brightness_value = 0
+contrast_value = 1
+noise_value = 0
+is_adj = 1  # 0 = disable adjustment, 1 = enable adjustment
+
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
 
 # Read the image
-frame = cv2.imread('images/rainfall/fake_rain/5_2_bad.jpg')  # Normal parking lot image
+frame = cv2.imread('images/rainfall/fake_rain/1_2_bad.jpg')  # Normal parking lot image
+
+# Function to adjust brightness and contrast
+def adjust_brightness_contrast(image, brightness=0, contrast=0):
+    if brightness != 0:
+        if brightness > 0:
+            shadow = brightness
+            highlight = 255
+        else:
+            shadow = 0
+            highlight = 255 + brightness
+        alpha_b = (highlight - shadow) / 255
+        gamma_b = shadow
+        buf = cv2.addWeighted(image, alpha_b, image, 0, gamma_b)
+    else:
+        buf = image.copy()
+
+    if contrast != 0:
+        f = 131 * (contrast + 127) / (127 * (131 - contrast))
+        alpha_c = f
+        gamma_c = 127 * (1 - f)
+        buf = cv2.addWeighted(buf, alpha_c, buf, 0, gamma_c)
+
+    return buf
+
+# Function to reduce noise
+def reduce_noise(image, noise_value):
+    return cv2.fastNlMeansDenoisingColored(image, None, noise_value, noise_value, 7, 21)
 
 # Read "coco.txt" file and split the data into a list of classes
 with open("coco.txt", "r") as my_file:
     data = my_file.read()
     class_list = data.split("\n")
 
-# Since no adjustment is needed, just use the original frame
-frame_preprocessed = frame.copy()
+# Adjust the brightness, contrast, and noise of the image based on is_adj
+if is_adj == 1:
+    frame_preprocessed = adjust_brightness_contrast(frame, brightness_value, contrast_value)
+    frame_preprocessed = reduce_noise(frame_preprocessed, noise_value)
+else:
+    frame_preprocessed = frame.copy()
 
 # Calculate PSNR
 psnr_value = cv2.PSNR(frame, frame_preprocessed)
