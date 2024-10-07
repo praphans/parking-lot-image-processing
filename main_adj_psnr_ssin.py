@@ -3,18 +3,20 @@ import cvzone
 from ultralytics import YOLO
 from skimage.metrics import structural_similarity as ssim
 import numpy as np
-
-# Define parameters for adjustment
-brightness_value = 0
-contrast_value = 1
-noise_value = 0
-is_adj = 1  # 0 = disable adjustment, 1 = enable adjustment
+import os
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
 
-# Read the image
-frame = cv2.imread('images/rainfall/fake_rain/1_2_bad.jpg')  # Normal parking lot image
+# Define parameters for adjustment
+brightness_value = 5
+contrast_value = 15
+noise_value = 2
+is_adj = 1  # 0 = disable adjustment, 1 = enable adjustment
+
+# Define image path
+image_path = 'images/rainfall/2012-12-11_14_56_07_jpg.rf.6df322de34acc6e2d02cb1140af3175f.jpg'
+frame = cv2.imread(image_path)  # Normal parking lot image
 
 # Function to adjust brightness and contrast
 def adjust_brightness_contrast(image, brightness=0, contrast=0):
@@ -48,11 +50,16 @@ with open("coco.txt", "r") as my_file:
     data = my_file.read()
     class_list = data.split("\n")
 
-# Adjust the brightness, contrast, and noise of the image based on is_adj
+
+# Apply preprocessing if enabled
 if is_adj == 1:
-    frame_preprocessed = adjust_brightness_contrast(frame, brightness_value, contrast_value)
-    frame_preprocessed = reduce_noise(frame_preprocessed, noise_value)
+    # Step 1: Reduce noise first
+    frame_preprocessed = reduce_noise(frame, noise_value)
+
+    # Step 2: Adjust brightness and contrast after noise reduction
+    frame_preprocessed = adjust_brightness_contrast(frame_preprocessed, brightness_value, contrast_value)
 else:
+    # No adjustments, use the original frame
     frame_preprocessed = frame.copy()
 
 # Calculate PSNR
@@ -76,17 +83,12 @@ print(f"Car with preprocess: {num_cars_with_preprocess}")
 print(f"PSNR: {psnr_value}")
 print(f"SSIM: {ssim_value}")
 
-# Draw bounding boxes around cars in the image with preprocessing
-for box in car_boxes_with_preprocess:
-    x1, y1, x2, y2 = map(int, box[0])
-    cv2.rectangle(frame_preprocessed, (x1, y1), (x2, y2), (0, 255, 0), 2)
-
 # Display car count, PSNR, and SSIM on the image
 cvzone.putTextRect(frame_preprocessed, f'Car with preprocess: {num_cars_with_preprocess}', (50, 60), 2, 2)
 cvzone.putTextRect(frame_preprocessed, f'PSNR: {psnr_value:.2f}', (50, 120), 2, 2)
 cvzone.putTextRect(frame_preprocessed, f'SSIM: {ssim_value:.4f}', (50, 180), 2, 2)
 
-# Display the image with bounding boxes and car count
-cv2.imshow('Image with cars', frame_preprocessed)
+# Display the processed image
+cv2.imshow('Processed Image', frame_preprocessed)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
