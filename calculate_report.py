@@ -77,7 +77,8 @@ for image_path, output_path in images:
                 # Detect objects in the preprocessed image
                 results_with_preprocess = model(frame_preprocessed)
                 car_class_id = class_list.index('car')
-                car_boxes_with_preprocess = [det.xyxy.numpy() for result in results_with_preprocess for det in result.boxes if int(det.cls) == car_class_id]
+                #car_boxes_with_preprocess = [det.xyxy.numpy() for result in results_with_preprocess for det in result.boxes if int(det.cls) == car_class_id]
+                car_boxes_with_preprocess = [det.xyxy.cpu().numpy() for result in results_with_preprocess for det in result.boxes if int(det.cls) == car_class_id]
                 num_cars_with_preprocess = len(car_boxes_with_preprocess)
 
                 # Prepare the data for CSV export
