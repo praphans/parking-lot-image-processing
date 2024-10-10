@@ -5,6 +5,7 @@ from skimage.metrics import structural_similarity as ssim
 import numpy as np
 import pandas as pd
 import os
+from brisque import BRISQUE  # นำเข้า BRISQUE
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
@@ -54,10 +55,13 @@ for image_path, output_path in images:
     frame = cv2.imread(image_path)  # Load the current image
     results = []  # Prepare a list to store results for CSV export
 
+    # Create BRISQUE object
+    brisque = BRISQUE()
+
     # Loop through all combinations of brightness, contrast, and noise
     for brightness_value in range(0, 81, 5):  # 0 to 80 with step 5
         for contrast_value in range(0, 81, 5):  # 0 to 80 with step 5
-            for noise_value in np.arange(0, 11, 0.5):  # 0 to 10 with step 0.5
+            for noise_value in np.arange(0, 11, 0.5):  # 0 to 10.5 with step 0.5
                 # Step 1: Reduce noise first
                 frame_preprocessed = reduce_noise(frame, noise_value)
 
@@ -74,10 +78,12 @@ for image_path, output_path in images:
                 # Calculate SSIM
                 ssim_value, _ = ssim(gray_frame, gray_frame_preprocessed, full=True)
 
+                # Calculate BRISQUE score using the BRISQUE object
+                brisque_score = brisque.score(frame_preprocessed)
+
                 # Detect objects in the preprocessed image
                 results_with_preprocess = model(frame_preprocessed)
                 car_class_id = class_list.index('car')
-                #car_boxes_with_preprocess = [det.xyxy.numpy() for result in results_with_preprocess for det in result.boxes if int(det.cls) == car_class_id]
                 car_boxes_with_preprocess = [det.xyxy.cpu().numpy() for result in results_with_preprocess for det in result.boxes if int(det.cls) == car_class_id]
                 num_cars_with_preprocess = len(car_boxes_with_preprocess)
 
@@ -87,6 +93,7 @@ for image_path, output_path in images:
                     'Cars': num_cars_with_preprocess,        # Not in a list
                     'PSNR': psnr_value,                      # Not in a list
                     'SSIM': ssim_value,                      # Not in a list
+                    'BRISQUE': brisque_score,                # บันทึกค่า BRISQUE
                     'Brightness': brightness_value,          # Not in a list
                     'Contrast': contrast_value,              # Not in a list
                     'Noise': noise_value                     # Not in a list

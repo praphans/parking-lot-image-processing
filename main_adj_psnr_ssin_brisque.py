@@ -4,6 +4,7 @@ from ultralytics import YOLO
 from skimage.metrics import structural_similarity as ssim
 import numpy as np
 import os
+from brisque import BRISQUE  # นำเข้า BRISQUE
 
 # Load the YOLO model
 model = YOLO('yolov8s.pt')
@@ -50,7 +51,6 @@ with open("coco.txt", "r") as my_file:
     data = my_file.read()
     class_list = data.split("\n")
 
-
 # Apply preprocessing if enabled
 if is_adj == 1:
     # Step 1: Reduce noise first
@@ -72,6 +72,10 @@ gray_frame_preprocessed = cv2.cvtColor(frame_preprocessed, cv2.COLOR_BGR2GRAY)
 # Calculate SSIM
 ssim_value, _ = ssim(gray_frame, gray_frame_preprocessed, full=True)
 
+# Calculate BRISQUE score using the BRISQUE object
+brisque = BRISQUE()
+brisque_score = brisque.score(frame_preprocessed)
+
 # Detect objects in the preprocessed image
 results_with_preprocess = model(frame_preprocessed)
 car_class_id = class_list.index('car')
@@ -81,15 +85,16 @@ num_cars_with_preprocess = len(car_boxes_with_preprocess)
 # Print the number of cars detected
 print(f"Car with preprocess: {num_cars_with_preprocess}")
 print(f"PSNR: {psnr_value}")
-print(f"SSIM: {ssim_value}")
+print(f"SSIM: {ssim_value:.4f}")
+print(f"BRISQUE: {brisque_score:.4f}")  # แสดงค่า BRISQUE
 
-# Display car count, PSNR, and SSIM on the image
+# Display car count, PSNR, SSIM, and BRISQUE on the image
 cvzone.putTextRect(frame_preprocessed, f'Car with preprocess: {num_cars_with_preprocess}', (50, 60), 2, 2)
 cvzone.putTextRect(frame_preprocessed, f'PSNR: {psnr_value:.2f}', (50, 120), 2, 2)
 cvzone.putTextRect(frame_preprocessed, f'SSIM: {ssim_value:.4f}', (50, 180), 2, 2)
+cvzone.putTextRect(frame_preprocessed, f'BRISQUE: {brisque_score:.4f}', (50, 240), 2, 2)  # แสดงค่า BRISQUE
 
 # Display the processed image
 cv2.imshow('Processed Image', frame_preprocessed)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
