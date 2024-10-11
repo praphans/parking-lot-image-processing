@@ -15,7 +15,7 @@ images = [
     ('images/rainfall/2012-12-11_14_56_07_jpg.rf.6df322de34acc6e2d02cb1140af3175f.jpg', 'Resault/report/report_real_img01.csv'),
     ('images/rainfall/2012-12-21_18_30_15_jpg.rf.823ad3e87780ff3fb214468b44e23c8c.jpg', 'Resault/report/report_real_img02.csv'),
     ('images/rainfall/fake_rain/1_2_bad.jpg', 'Resault/report/report_fake_img01.csv'),
-    ('images/rainfall/fake_rain/4_2_bad.jpg', 'Resault/report/report_fake_img04.csv')
+    ('images/rainfall/fake_rain/4_2_bad.jpg', 'Resault/report/report_fake_img02.csv')
 ]
 
 # Function to adjust brightness and contrast
