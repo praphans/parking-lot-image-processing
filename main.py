@@ -42,7 +42,7 @@ def reduce_noise(image, noise_value):
 
 # Detect objects in the original image (without preprocessing) / ตรวจจับวัตถุในภาพต้นฉบับ (ไม่ใช้การประมวลผลล่วงหน้า)
 results_without_preprocess = model(frame)
-car_boxes_without_preprocess = [det.xyxy.numpy() for result in results_without_preprocess for det in result.boxes if int(det.cls) == car_class_id]
+car_boxes_without_preprocess = [det.xyxy.detach().cpu().numpy() for result in results_without_preprocess for det in result.boxes if int(det.cls) == car_class_id]  # แก้ไขเพื่อย้ายไปยัง CPU
 num_cars_without_preprocess = len(car_boxes_without_preprocess)
 
 # Measure initial BRISQUE value for the original image / วัดค่า BRISQUE เริ่มต้นสำหรับภาพต้นฉบับ
@@ -79,7 +79,7 @@ for i in range(len(brisque_results)):
 
     # Detect cars in the adjusted image / ตรวจจับรถยนต์ในภาพที่ปรับแล้ว
     results_with_preprocess = model(frame_preprocessed)
-    car_boxes_with_preprocess = [det.xyxy.numpy() for result in results_with_preprocess for det in result.boxes if int(det.cls) == car_class_id]
+    car_boxes_with_preprocess = [det.xyxy.detach().cpu().numpy() for result in results_with_preprocess for det in result.boxes if int(det.cls) == car_class_id]  # แก้ไขเพื่อย้ายไปยัง CPU
     num_cars_with_preprocess = len(car_boxes_with_preprocess)
 
     # Compare the detected cars with default_car / เปรียบเทียบจำนวนรถที่ตรวจจับได้กับ default_car
