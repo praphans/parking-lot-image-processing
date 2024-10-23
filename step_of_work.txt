@@ -1,0 +1,24 @@
+Key changes:
+Step 1: Detect the number of cars and measure the BRISQUE before adjusting brightness, contrast, and noise.
+Step 2: Loop through brightness, contrast, and noise values, calculate BRISQUE, store the results, and sort them by BRISQUE.
+Step 3: Use the best BRISQUE values to adjust the image and detect cars.
+Step 4: Compare the detected cars with default_car, and if the detection improves, stop. Otherwise, continue testing with lower BRISQUE values.
+Step 5: If no improvement is found, display the result with the highest detected car count.
+
+โดยขั้นตอนที่ 1 detect หาจำนวนรถยนต์ และวัดค่า BRISQUE ก่อนการ adjust brightness ,contrast , reduce noise และเก็บค่าตั้งต้นของ default_car และ default_brisque 
+
+ขั้นตอนที่ 2 ทำการ loop เพื่อ adjust brightness ,contrast , reduce noise
+for brightness_value in brightness_range:
+for contrast_value in contrast_range:
+for noise_value in noise_range:
+แบบเดิมเพื่อวัดค่า BRISQUE และเก็บค่าเป็น array ของ brightness ,contrast , reduce noise, brisque ไว้และ จัดเรียง order by  brisque ใน array จากมากไปหาน้อยโดย BRISQUE  มากที่สุดคือ array[0] โดยไม่ต้อง Detect รถยนต์
+
+ขั้นตอนที่ 3 เมื่อทดสอบและเก็บค่าของ BRISQUE  ลง array เรียบร้อยแล้ว นำ array[0] หรือ  BRISQUE ใน array ที่มากที่สุด และนำ ค่าของ brightness ,contrast , reduce noise ในชุด array BRISQUE มาปรับปรุงคุณภาพของรูปภาพ และ detect รถยนต์
+
+ขั้นตอนที่ 4 นำจำนวนรถยนต์ที่ detect ได้มาเทียบกับ default_car หากมีค่ามากกว่าให้หยุดทำงานและแสดงผลทางหน้าจอ
+
+ขั้นตอนที่ 5 หากจำนวนรถยต์ที่ detect มีจำนวนน้อยกว่า default_car ใช้ loop ถอย array เช่น array ที่ 5,array ที่ 4 , array ที่ 3 ไปเรื่อยๆจนจำนวนรถยต์ที่ detect มีจำนวนมากกว่า default_car และ BRISQUE ไม่น้อยกว่า default_brisque  ทดสอบจนได้จำนวนรถยนต์ที่มากว่า หากทดสอบจน BRISQUE เท่ากับหรือน้อยกว่า default_brisque แล้วยังไม่พบจำนวนรถยนต์ที่มากว่าให้แสดงผลจำนวนรถยนต์ที่มากที่สุดของที่ทดสอบมาก่อนหน้า 
+# Display car count, SSIM, and PSNR on the image
+cvzone.putTextRect(frame_preprocessed, f'Car without preprocess: {num_cars_without_preprocess}', (50, 60), 2, 2)
+cvzone.putTextRect(frame_preprocessed, f'Car with preprocess: {best_num_cars}', (50, 110), 2, 2)
+cvzone.putTextRect(frame_preprocessed, f'BRISQUE: {best_psnr:.2f}', (50, 160), 2, 2)
