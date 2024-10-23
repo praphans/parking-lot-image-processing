@@ -59,6 +59,10 @@ def calculate_brisque_params(brightness_value, contrast_value, noise_value):
     frame_preprocessed = adjust_brightness_contrast(frame, brightness_value, contrast_value)
     frame_preprocessed = reduce_noise(frame_preprocessed, noise_value)
     brisque_value = brisque_evaluator.score(frame_preprocessed)
+    
+    # Print the current parameters and BRISQUE value
+    print(f"Brightness: {brightness_value}, Contrast: {contrast_value}, Noise: {noise_value}, BRISQUE: {brisque_value:.2f}")
+    
     return (brightness_value, contrast_value, noise_value, brisque_value)
 
 # Parallel execution to speed up BRISQUE calculations / การประมวลผลแบบคู่ขนานเพื่อเพิ่มความเร็วในการคำนวณ BRISQUE
