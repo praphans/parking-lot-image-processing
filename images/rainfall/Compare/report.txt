@@ -1,0 +1,15 @@
+1_good.jpg 
+Car with preprocess: 37
+BRISQUE: 17.5628
+
+2_good.jpg 
+Car with preprocess: 29
+BRISQUE: 17.1738
+
+1_bad.jpg 
+Car with preprocess: 9
+BRISQUE: 26.7144
+
+2_bad.jpg 
+Car with preprocess: 29
+BRISQUE: 21.0052

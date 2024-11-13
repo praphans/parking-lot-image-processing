@@ -14,7 +14,7 @@ noise_value = 2.5
 is_adj = 0  # 0 = disable adjustment, 1 = enable adjustment
 
 # Define image path
-image_path = 'images/rainfall/2012-12-07_16_42_25_jpg.rf.b3ab0f1190cf376d9f536302e8a4d202.jpg'
+image_path = 'images/rainfall/Compare/2_bad.jpg'
 frame = cv2.imread(image_path)  # Load the parking lot image
 
 # Function to adjust brightness and contrast
